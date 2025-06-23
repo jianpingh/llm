@@ -27,7 +27,8 @@ def test_open_api_query():
     order_api = OrderAPI()
     agent = CustomerAgent(retriever, product_api, order_api)
 
-    result = agent.handle_query("FAQ:退货")
+    print("")
+    result = agent.handle_query("FAQ:发货时间是多久")
     print("FAQ测试结果:", result)
 
     result = agent.handle_query("商品:手机")

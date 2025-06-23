@@ -6,11 +6,37 @@ import requests
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+import faiss
+import numpy as np
+from sentence_transformers import SentenceTransformer
 
 load_dotenv()
 
+class FAQVectorStore:
+    def __init__(self, faq_txt_path):
+        self.faq_txt_path = faq_txt_path
+        self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+        self.index = None
+        self.faq_list = []
+        self.embeddings = None
+        self._load_and_index()
+
+    def _load_and_index(self):
+        with open(self.faq_txt_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        self.faq_list = [line.strip() for line in lines if line.strip()]
+        self.embeddings = self.model.encode(self.faq_list, convert_to_numpy=True)
+        dim = self.embeddings.shape[1]
+        self.index = faiss.IndexFlatL2(dim)
+        self.index.add(self.embeddings)
+
+    def search(self, query, top_k=1):
+        query_vec = self.model.encode([query], convert_to_numpy=True)
+        D, I = self.index.search(query_vec, top_k)
+        return [self.faq_list[i] for i in I[0]]
+
 class CustomerAgent:
-    def __init__(self, faq_retriever, product_api, order_api):
+    def __init__(self, faq_retriever, product_api, order_api, faq_vector_store=None):
         self.faq_retriever = faq_retriever
         self.product_api = product_api
         self.order_api = order_api
@@ -20,6 +46,7 @@ class CustomerAgent:
             api_key=self.api_key,
             base_url=self.api_proxy_url
         )
+        self.faq_vector_store = faq_vector_store
 
     def infer_intent(self, query):
         try:
@@ -53,7 +80,11 @@ class CustomerAgent:
     def handle_query(self, query):
         intent = self.infer_intent(query)
         if "FAQ" in intent:
-            faq_answer = self.faq_retriever.retrieve(query)
+            if self.faq_vector_store:
+                similar_faqs = self.faq_vector_store.search(query, top_k=1)
+                faq_answer = similar_faqs[0] if similar_faqs else "未找到相关FAQ。"
+            else:
+                faq_answer = self.faq_retriever.retrieve(query)
             return self.query_open_api(f"用户问题：{query}\nFAQ知识库回答：{faq_answer}\n请用专业客服语气总结回复用户。")
         elif "商品" in intent:
             product_info = self.product_api.get_product_info(query)

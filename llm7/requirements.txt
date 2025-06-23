@@ -4,3 +4,9 @@
 pytest
 logging
 mysql-connector-python
+python-dotenv
+openai
+faiss-cpu
+numpy
+sentence-transformers
+requests

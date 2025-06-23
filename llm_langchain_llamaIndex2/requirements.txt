@@ -1,0 +1,16 @@
+# LangChain 核心与 OpenAI 接口
+langchain>=0.1.14
+langchain-openai>=0.0.7
+langchain-community>=0.0.7
+
+# LlamaIndex 核心与 I/O
+llama-index>=0.10.30
+llama-index-core>=0.10.30
+
+# 本地 Embedding 模型 + Chroma 向量存储
+sentence-transformers>=2.2.2
+torch>=2.0.0
+chromadb>=0.4.24
+
+# Tokenizer
+tiktoken>=0.5.1

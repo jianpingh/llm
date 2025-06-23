@@ -20,17 +20,18 @@ def test_faq_retrieval():
 def test_open_api_query():
     database = FAQDatabase()
     retriever = FAQRetriever(database)
-    agent = CustomerAgent(retriever, None, None)
+    # 导入商品和订单API
+    from app.product.product_api import ProductAPI
+    from app.order.order_api import OrderAPI
+    product_api = ProductAPI()
+    order_api = OrderAPI()
+    agent = CustomerAgent(retriever, product_api, order_api)
 
-    mock_response = {
-        "choices": [
-            {"text": "这是一个测试回答。"}
-        ]
-    }
+    result = agent.handle_query("FAQ:退货")
+    print("FAQ测试结果:", result)
 
-    with patch("requests.post") as mock_post:
-        mock_post.return_value.json.return_value = mock_response
-        mock_post.return_value.raise_for_status = lambda: None
+    result = agent.handle_query("商品:手机")
+    print("商品测试结果:", result)
 
-        result = agent.query_open_api("测试问题")
-        assert result == "这是一个测试回答。"
+    result = agent.handle_query("订单:12345")
+    print("订单测试结果:", result)

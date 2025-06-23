@@ -1,0 +1,6 @@
+# 依赖库清单
+
+# 项目所需的依赖库
+pytest
+logging
+mysql-connector-python

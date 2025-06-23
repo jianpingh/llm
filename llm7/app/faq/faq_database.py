@@ -4,10 +4,23 @@
 
 class FAQDatabase:
     def __init__(self):
-        self.data = {
-            "退货": "退货政策为7天无理由退货。",
-            "发货": "发货时间通常为1-3个工作日。"
-        }
+        self.data = {}
+        self._load_data()
+
+    def _load_data(self):
+        try:
+            with open(r"app/faq.txt", "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    if '？' in line:
+                        q, a = line.split('？', 1)
+                        question = q.strip() + '？'
+                        answer = a.strip()
+                        self.data[question] = answer
+        except Exception as e:
+            print(f"加载faq.txt失败: {e}")
 
     def search(self, query):
         return self.data.get(query, "未找到相关FAQ。")

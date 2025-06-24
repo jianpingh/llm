@@ -8,5 +8,5 @@ class ProductAPI:
         return {
             "id": product_id,
             "name": "示例商品",
-            "price": 100.0
+            "price": 299.99
         }

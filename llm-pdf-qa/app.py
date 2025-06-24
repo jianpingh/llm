@@ -36,3 +36,13 @@ query_engine = index.as_query_engine()
 # 执行查询并打印结果
 response = query_engine.query("文档的核心观点是什么？")
 print(response)
+
+# 增加用户输入问题并回答问题的逻辑
+print("📚 文档问答系统已启动，请输入问题（输入 exit 退出）")
+while True:
+    query = input("\n❓ 请输入你的问题：")
+    if query.lower() in ["exit", "quit", "退出"]:
+        print("👋 再见！")
+        break
+    response = query_engine.query(query)
+    print(f"💡 答案：\n{response}")

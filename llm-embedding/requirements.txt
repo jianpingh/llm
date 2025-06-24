@@ -3,4 +3,5 @@ sentence-transformers
 torch
 hf_xet
 huggingface_hub[hf_xet]
+chromadb
 

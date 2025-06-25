@@ -1,14 +1,9 @@
-# multi_agent_demo/requirements.txt
-langchain==0.1.13
-llama-index==0.10.14
-chromadb==0.4.22
-openai==1.3.9
-tiktoken==0.5.1
-python-dotenv==1.0.1
-requests==2.31.0
-httpx==0.24.1
-pydantic==1.10.13
-typing-extensions==4.6.3
-nest-asyncio==1.6.0
-fastapi==0.95.2
-uvicorn[standard]==0.22.0
+llama-index==0.12.43
+llama-index-vector-stores-chroma==0.4.2
+chromadb>=0.5.17,<0.6.0
+openai==1.85.0
+python-dotenv>=1.0.0
+langchain>=0.0.315
+langchain-community>=0.1.0
+
+

@@ -1,0 +1,265 @@
+LlamaIndex 快速入门指南
+
+========================================
+
+目录
+1. 什么是 LlamaIndex
+2. 核心概念
+3. 安装和设置
+4. 基础使用
+5. 高级功能
+6. 最佳实践
+7. 常见问题
+
+========================================
+
+1. 什么是 LlamaIndex
+
+LlamaIndex 是一个数据框架，专门用于LLM应用程序。它提供了以下核心功能：
+
+- 数据连接器：从各种数据源（API、PDF、文档、SQL等）获取数据
+- 数据索引：以易于LLM使用的格式结构化数据
+- 引擎：提供对数据的自然语言访问接口
+- 数据代理：增强LLM的知识工具
+
+主要用途：
+* 问答系统
+* 文档聊天
+* 知识图谱构建
+* 智能搜索
+* 内容生成
+
+========================================
+
+2. 核心概念
+
+2.1 文档 (Documents)
+文档是LlamaIndex中的基本数据单位，包含文本内容和元数据。
+
+示例：
+```
+from llama_index import Document
+
+doc = Document(
+    text="这是文档内容",
+    metadata={"source": "example.pdf", "page": 1}
+)
+```
+
+2.2 节点 (Nodes)
+节点是文档的"块"，是索引的原子单位。
+
+2.3 索引 (Indexes)
+索引是节点的数据结构，支持高效检索。
+
+主要类型：
+- VectorStoreIndex：基于向量相似度的索引
+- ListIndex：简单的列表索引
+- TreeIndex：层次化的树形索引
+- KeywordTableIndex：基于关键词的索引
+
+2.4 检索器 (Retrievers)
+检索器从索引中获取相关节点。
+
+2.5 查询引擎 (Query Engines)
+查询引擎结合检索器和LLM来回答问题。
+
+========================================
+
+3. 安装和设置
+
+3.1 安装
+```
+pip install llama-index
+```
+
+3.2 设置OpenAI API
+```
+import os
+os.environ["OPENAI_API_KEY"] = "your-api-key"
+```
+
+3.3 基本导入
+```
+from llama_index import VectorStoreIndex, SimpleDirectoryReader
+from llama_index.llms import OpenAI
+```
+
+========================================
+
+4. 基础使用
+
+4.1 从文档创建索引
+```
+# 读取文档
+documents = SimpleDirectoryReader("./data").load_data()
+
+# 创建索引
+index = VectorStoreIndex.from_documents(documents)
+```
+
+4.2 查询索引
+```
+# 创建查询引擎
+query_engine = index.as_query_engine()
+
+# 执行查询
+response = query_engine.query("什么是人工智能？")
+print(response)
+```
+
+4.3 持久化索引
+```
+# 保存索引
+index.storage_context.persist("./storage")
+
+# 加载索引
+from llama_index import StorageContext, load_index_from_storage
+
+storage_context = StorageContext.from_defaults(persist_dir="./storage")
+index = load_index_from_storage(storage_context)
+```
+
+========================================
+
+5. 高级功能
+
+5.1 自定义LLM
+```
+from llama_index.llms import OpenAI
+
+llm = OpenAI(model="gpt-4", temperature=0.1)
+index = VectorStoreIndex.from_documents(documents, llm=llm)
+```
+
+5.2 自定义嵌入模型
+```
+from llama_index.embeddings import OpenAIEmbedding
+
+embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
+index = VectorStoreIndex.from_documents(
+    documents, 
+    embed_model=embed_model
+)
+```
+
+5.3 文本分割器
+```
+from llama_index.text_splitter import SentenceSplitter
+
+text_splitter = SentenceSplitter(
+    chunk_size=1024,
+    chunk_overlap=20
+)
+
+index = VectorStoreIndex.from_documents(
+    documents,
+    transformations=[text_splitter]
+)
+```
+
+5.4 向量数据库集成
+```
+import chromadb
+from llama_index.vector_stores import ChromaVectorStore
+
+# 创建Chroma客户端
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+chroma_collection = chroma_client.get_or_create_collection("documents")
+
+# 创建向量存储
+vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+
+# 创建存储上下文
+storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+# 创建索引
+index = VectorStoreIndex.from_documents(
+    documents,
+    storage_context=storage_context
+)
+```
+
+5.5 检索增强生成 (RAG)
+```
+# 配置检索器
+retriever = index.as_retriever(
+    similarity_top_k=5,
+    similarity_threshold=0.7
+)
+
+# 创建查询引擎
+query_engine = index.as_query_engine(
+    retriever=retriever,
+    response_mode="tree_summarize"
+)
+```
+
+========================================
+
+6. 最佳实践
+
+6.1 文档预处理
+- 清理文档格式
+- 移除无关内容
+- 统一编码格式
+- 添加有意义的元数据
+
+6.2 索引优化
+- 选择合适的索引类型
+- 调整块大小和重叠
+- 使用合适的嵌入模型
+- 定期更新索引
+
+6.3 查询优化
+- 使用具体明确的查询
+- 配置合适的相似度阈值
+- 选择适当的响应模式
+- 实现查询预处理
+
+6.4 性能优化
+- 使用向量数据库
+- 实现索引缓存
+- 批量处理文档
+- 监控查询性能
+
+========================================
+
+7. 常见问题
+
+Q1: 如何处理大型文档？
+A1: 使用合适的文本分割器，调整chunk_size参数，考虑使用层次化索引。
+
+Q2: 如何提高检索准确性？
+A2: 优化嵌入模型选择，调整相似度阈值，改进文档预处理，使用元数据过滤。
+
+Q3: 如何集成自定义数据源？
+A3: 实现自定义的Reader类，继承BaseReader并实现load_data方法。
+
+Q4: 索引更新策略？
+A4: 支持增量更新，可以使用insert、delete、update方法动态修改索引。
+
+Q5: 如何处理多语言文档？
+A5: 使用支持多语言的嵌入模型，如multilingual-e5系列，考虑语言分离索引。
+
+========================================
+
+总结
+
+LlamaIndex 是构建RAG应用的强大工具，提供了从数据摄取到查询响应的完整pipeline。
+
+核心优势：
++ 简单易用的API
++ 丰富的数据连接器
++ 灵活的索引结构
++ 强大的查询能力
++ 良好的扩展性
+
+适用场景：
++ 企业知识库
++ 文档问答系统
++ 智能客服
++ 研究助手
++ 内容分析
+
+通过合理的配置和优化，LlamaIndex可以帮助构建高效准确的智能问答系统。

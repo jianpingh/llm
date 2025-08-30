@@ -1,0 +1,348 @@
+Python 数据科学学习笔记
+
+=====================================
+
+第一章：环境搭建与基础库
+
+1.1 Anaconda 安装
+- 下载地址：https://www.anaconda.com/
+- 包含了 Python、Jupyter、常用科学计算库
+- 推荐使用 conda 进行包管理
+
+1.2 核心库介绍
+
+NumPy - 数值计算基础
+- 多维数组对象 ndarray
+- 广播机制
+- 线性代数运算
+- 随机数生成
+
+代码示例：
+import numpy as np
+
+# 创建数组
+arr = np.array([1, 2, 3, 4, 5])
+matrix = np.array([[1, 2], [3, 4]])
+
+# 数组运算
+result = arr * 2
+dot_product = np.dot(matrix, matrix)
+
+Pandas - 数据分析核心
+- Series 和 DataFrame 数据结构
+- 数据读取和写入
+- 数据清洗和转换
+- 分组和聚合操作
+
+代码示例：
+import pandas as pd
+
+# 读取数据
+df = pd.read_csv('data.csv')
+
+# 数据清洗
+df.dropna()  # 删除缺失值
+df.fillna(0)  # 填充缺失值
+
+# 数据分组
+grouped = df.groupby('category').mean()
+
+Matplotlib - 数据可视化
+- 基础绘图功能
+- 图表类型：线图、散点图、柱状图、直方图
+- 图表美化和定制
+
+代码示例：
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, label='数据趋势')
+plt.xlabel('X轴标签')
+plt.ylabel('Y轴标签')
+plt.title('图表标题')
+plt.legend()
+plt.show()
+
+Seaborn - 统计可视化
+- 基于 matplotlib 的高级接口
+- 统计图表：箱线图、小提琴图、热力图
+- 优美的默认样式
+
+代码示例：
+import seaborn as sns
+
+# 相关性热力图
+sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+
+# 分布图
+sns.distplot(df['column'])
+
+# 箱线图
+sns.boxplot(x='category', y='value', data=df)
+
+第二章：数据处理技巧
+
+2.1 数据读取
+- CSV文件：pd.read_csv()
+- Excel文件：pd.read_excel()
+- JSON文件：pd.read_json()
+- 数据库：pd.read_sql()
+
+参数调优：
+- encoding：指定编码格式
+- sep：指定分隔符
+- header：指定标题行
+- index_col：指定索引列
+
+2.2 数据清洗
+常见数据质量问题：
+- 缺失值处理
+- 重复数据删除
+- 异常值识别
+- 数据类型转换
+
+缺失值处理策略：
+1. 删除：适用于缺失比例较小的情况
+2. 填充：均值、中位数、众数填充
+3. 插值：线性插值、多项式插值
+4. 模型预测：使用其他特征预测缺失值
+
+异常值检测方法：
+1. 统计方法：3σ原则、IQR方法
+2. 可视化：箱线图、散点图
+3. 机器学习：孤立森林、LOF算法
+
+2.3 数据转换
+- 数据标准化：StandardScaler
+- 数据归一化：MinMaxScaler
+- 对数转换：处理偏态分布
+- 分箱处理：连续变量离散化
+
+代码示例：
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+# 标准化
+scaler = StandardScaler()
+df_scaled = scaler.fit_transform(df)
+
+# 归一化
+minmax_scaler = MinMaxScaler()
+df_normalized = minmax_scaler.fit_transform(df)
+
+第三章：探索性数据分析 (EDA)
+
+3.1 描述性统计
+- 集中趋势：均值、中位数、众数
+- 离散程度：方差、标准差、四分位距
+- 分布形状：偏度、峰度
+
+代码示例：
+# 基本统计信息
+df.describe()
+
+# 更详细的统计
+df.skew()  # 偏度
+df.kurtosis()  # 峰度
+df.quantile([0.25, 0.5, 0.75])  # 分位数
+
+3.2 相关性分析
+- 皮尔逊相关系数：线性相关
+- 斯皮尔曼相关系数：单调相关
+- 肯德尔相关系数：等级相关
+
+代码示例：
+# 相关性矩阵
+corr_matrix = df.corr(method='pearson')
+
+# 可视化相关性
+plt.figure(figsize=(12, 8))
+sns.heatmap(corr_matrix, annot=True, cmap='RdYlBu_r')
+
+3.3 分布分析
+- 直方图：观察数据分布
+- Q-Q图：检验正态性
+- 密度图：平滑的分布估计
+
+代码示例：
+import scipy.stats as stats
+
+# 正态性检验
+statistic, p_value = stats.normaltest(df['column'])
+
+# Q-Q图
+stats.probplot(df['column'], dist="norm", plot=plt)
+
+第四章：机器学习基础
+
+4.1 scikit-learn 库
+- 统一的API接口
+- 丰富的算法选择
+- 完善的预处理工具
+- 模型评估指标
+
+4.2 监督学习
+分类算法：
+- 逻辑回归：线性分类器
+- 决策树：可解释性强
+- 随机森林：集成学习
+- 支持向量机：处理高维数据
+- K近邻：简单有效
+
+回归算法：
+- 线性回归：基础回归方法
+- 岭回归：处理多重共线性
+- Lasso回归：特征选择
+- 弹性网络：结合岭回归和Lasso
+
+代码示例：
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# 数据分割
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 模型训练
+model = RandomForestClassifier(n_estimators=100)
+model.fit(X_train, y_train)
+
+# 预测和评估
+predictions = model.predict(X_test)
+accuracy = accuracy_score(y_test, predictions)
+
+4.3 无监督学习
+聚类算法：
+- K-means：基于距离的聚类
+- 层次聚类：树形聚类结构
+- DBSCAN：基于密度的聚类
+
+降维技术：
+- 主成分分析 (PCA)：线性降维
+- t-SNE：非线性降维，适合可视化
+- UMAP：保持局部和全局结构
+
+代码示例：
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+
+# K-means聚类
+kmeans = KMeans(n_clusters=3)
+clusters = kmeans.fit_predict(X)
+
+# PCA降维
+pca = PCA(n_components=2)
+X_reduced = pca.fit_transform(X)
+
+第五章：实战项目案例
+
+5.1 房价预测项目
+目标：基于房屋特征预测房价
+
+数据特征：
+- 面积、房间数、地理位置
+- 建造年份、装修情况
+- 周边设施、交通便利性
+
+实施步骤：
+1. 数据收集和清洗
+2. 特征工程：创建新特征
+3. 模型选择：线性回归、随机森林
+4. 模型评估：RMSE、MAE、R²
+5. 结果解释：特征重要性分析
+
+5.2 客户流失预测
+目标：预测客户是否会流失
+
+数据特征：
+- 客户基本信息：年龄、性别、收入
+- 行为数据：消费频次、金额
+- 服务数据：投诉次数、满意度
+
+模型选择：
+- 逻辑回归：基线模型
+- 梯度提升：XGBoost、LightGBM
+- 神经网络：深度学习模型
+
+评估指标：
+- 准确率、精确率、召回率
+- F1分数、AUC-ROC曲线
+- 业务指标：挽留成本效益
+
+第六章：高级技巧与最佳实践
+
+6.1 特征工程
+- 特征选择：过滤法、包装法、嵌入法
+- 特征构造：多项式特征、交互特征
+- 特征变换：Box-Cox、Yeo-Johnson
+
+6.2 模型优化
+- 超参数调优：网格搜索、随机搜索
+- 交叉验证：K折、分层抽样
+- 集成学习：投票、堆叠、混合
+
+6.3 模型解释
+- 特征重要性：置换重要性、SHAP值
+- 局部解释：LIME、SHAP
+- 全局解释：部分依赖图、积累局部效应
+
+第七章：深度学习入门
+
+7.1 TensorFlow/Keras
+- 神经网络基础
+- 模型构建：Sequential、Functional API
+- 训练配置：优化器、损失函数、指标
+
+7.2 常见网络架构
+- 多层感知机：全连接层
+- 卷积神经网络：图像处理
+- 循环神经网络：序列数据
+
+代码示例：
+import tensorflow as tf
+from tensorflow import keras
+
+# 构建模型
+model = keras.Sequential([
+    keras.layers.Dense(64, activation='relu', input_shape=(features,)),
+    keras.layers.Dropout(0.2),
+    keras.layers.Dense(1, activation='sigmoid')
+])
+
+# 编译模型
+model.compile(
+    optimizer='adam',
+    loss='binary_crossentropy',
+    metrics=['accuracy']
+)
+
+# 训练模型
+history = model.fit(
+    X_train, y_train,
+    epochs=100,
+    validation_data=(X_test, y_test),
+    batch_size=32
+)
+
+总结
+
+Python数据科学生态系统提供了完整的工具链：
+- 数据处理：Pandas、NumPy
+- 可视化：Matplotlib、Seaborn、Plotly
+- 机器学习：scikit-learn、XGBoost
+- 深度学习：TensorFlow、PyTorch
+
+学习建议：
+1. 扎实掌握基础库的使用
+2. 多做实际项目练习
+3. 关注最新技术发展
+4. 培养数据敏感性和业务理解能力
+5. 注重代码质量和可重现性
+
+持续学习资源：
+- 官方文档和教程
+- Kaggle竞赛和数据集
+- GitHub开源项目
+- 技术博客和论坛
+- 在线课程和书籍

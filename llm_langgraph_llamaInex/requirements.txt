@@ -1,0 +1,31 @@
+# Core dependencies for LangGraph + LlamaIndex + OpenAI integration
+openai>=1.50.0
+langgraph>=0.2.0
+llama-index>=0.10.0
+llama-index-llms-openai>=0.3.0
+llama-index-embeddings-openai>=0.3.0
+llama-index-vector-stores-chroma>=0.2.0
+
+# Web interface
+streamlit>=1.28.0
+
+# Document processing
+pymupdf>=1.24.0
+python-docx>=0.8.11
+markdown>=3.5.0
+beautifulsoup4>=4.12.0
+
+# Vector database
+chromadb>=0.4.0
+
+# Environment and configuration
+python-dotenv>=1.0.0
+
+# Utilities
+typing-extensions>=4.8.0
+
+# Optional: For advanced text processing
+sentence-transformers>=2.2.0
+
+# Optional: For monitoring and logging
+psutil>=5.9.0
